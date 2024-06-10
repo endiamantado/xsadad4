@@ -819,6 +819,8 @@ def show_help(message):
     """
     bot.reply_to(message, help_text, parse_mode="Markdown")
 
+# Eliminar el webhook
+bot.remove_webhook()
 
 # Iniciar el bot
 bot.polling()
