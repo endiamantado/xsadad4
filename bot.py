@@ -110,14 +110,13 @@ def send_dni_info(message):
     try:
         with open('whitelist.txt', 'r') as f:
             autorizados = [int(line.strip()) for line in f.readlines()]
+        print(f"Autorizados: {autorizados}")
     except FileNotFoundError:
         bot.reply_to(message, "No se encontró el archivo de la whitelist.")
         return
     except ValueError:
         bot.reply_to(message, "Error al procesar el archivo de la whitelist.")
         return
-
-    print(f"Autorizados: {autorizados}")
 
     if user_id in autorizados:
         try:
