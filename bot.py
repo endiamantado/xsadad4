@@ -18,9 +18,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 #FLASK
 # Token del bot de Telegram
-TOKEN = 'your_telegram_bot_token'
+TOKEN = '7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU'
 # URL de tu aplicación en Render
-WEBHOOK_URL = f'https://api-ricardo-whatsapp.onrender.com/{TOKEN}'
+WEBHOOK_URL = f'https://xsadad4.onrender.com/{TOKEN}'
 # Puerto configurado por Render
 PORT = int(os.environ.get('PORT', 3000))
 
