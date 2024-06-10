@@ -10,14 +10,18 @@ from flask import Flask, request
 
 session = Session()
 
+
 # Lista blanca de usuarios autorizados para agregar búsquedas y ver la lista blanca
 authorized_users = {
     6952385968,
     7178592767
 }
 
-# Archivo para almacenar los usuarios autorizados
-autorizados_file = 'whitelist.txt'
+#usuarios autorizados
+authorizados = {
+    6952385968,
+    7178592767
+}
 
 try:
     with open(autorizados_file, 'r') as file:
@@ -26,7 +30,9 @@ except FileNotFoundError:
     pass
 
 # Reemplaza 'YOUR_API_KEY' con el token de tu bot
-bot = telebot.TeleBot('YOUR_API_KEY')
+bot = telebot.TeleBot('7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU')
+
+TOKEN = '7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU'
 
 #FLASK
 server = Flask(__name__)
@@ -79,7 +85,6 @@ def send_welcome(message):
 
 
 
-@bot.message_handler(commands=['dni'])
 @bot.message_handler(commands=['dni'])
 def send_dni_info(message):
     try:
