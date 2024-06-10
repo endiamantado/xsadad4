@@ -80,6 +80,7 @@ def send_welcome(message):
 
 
 @bot.message_handler(commands=['dni'])
+@bot.message_handler(commands=['dni'])
 def send_dni_info(message):
     try:
         # Verifica si el usuario está autorizado
@@ -88,32 +89,29 @@ def send_dni_info(message):
         with open('whitelist.txt', 'r') as file:
             authorizados = set(map(int, file.read().splitlines()))
 
-        if user_id not in authorizados:
-            bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
-            return
+        if user_id in authorizados:
+            # Obtiene los parámetros del comando
+            command_params = message.text.split()
+            if len(command_params) != 3:
+                raise ValueError("Número incorrecto de parámetros")
 
-        # Obtiene los parámetros del comando
-        command_params = message.text.split()
-        if len(command_params) != 3:
-            raise ValueError("Número incorrecto de parámetros")
+            dni = command_params[1]
+            sexo = command_params[2].upper()
 
-        dni = command_params[1]
-        sexo = command_params[2].upper()
+            # Consulta la información del DNI
+            bot.reply_to(message, "🔍 Consultando DNI...")
+            if len(dni) == 8 and dni.isdigit() and sexo in ['F', 'M']:
+                url = f"https://teleconsultas-gov.onrender.com/zeakapi/{dni}/{sexo}"
+                try:
+                    response = session.get(url, verify=False)
+                    response.raise_for_status()
+                    data = response.json()
+                    print(f"/DNI UTILIZADO POR {user_id}, DNI Buscado: {dni}")
+                    if data and 'data' in data and 'sisa' in data['data']:
+                        sisa_info = data['data']['sisa']
 
-        # Consulta la información del DNI
-        bot.reply_to(message, "🔍 Consultando DNI...")
-        if len(dni) == 8 and dni.isdigit() and sexo in ['F', 'M']:
-            url = f"https://teleconsultas-gov.onrender.com/zeakapi/{dni}/{sexo}"
-            try:
-                response = session.get(url, verify=False)
-                response.raise_for_status()
-                data = response.json()
-                print(f"/DNI UTILIZADO POR {user_id}, DNI Buscado: {dni}")
-                if data and 'data' in data and 'sisa' in data['data']:
-                    sisa_info = data['data']['sisa']
-
-                    # Construye el mensaje de respuesta con la información del DNI
-                    formatted_message = """```
+                        # Construye el mensaje de respuesta con la información del DNI
+                        formatted_message = """```
 Datos Básicos:
 › Nombre: {nombre}
 › Apellido: {apellido}
@@ -134,17 +132,18 @@ Domicilio:
 › Código Postal: {codigoPostal}
 ```""".format(**sisa_info)
 
-                    bot.reply_to(message, formatted_message, parse_mode='Markdown')
-                else:
-                    bot.reply_to(message, "No se encontró información para el DNI y sexo proporcionados.")
-            except requests.RequestException as e:
-                bot.reply_to(message, "Error al obtener información del servidor.")
-                print(f"Error al obtener información del servidor: {e}")
+                        bot.reply_to(message, formatted_message, parse_mode='Markdown')
+                    else:
+                        bot.reply_to(message, "No se encontró información para el DNI y sexo proporcionados.")
+                except requests.RequestException as e:
+                    bot.reply_to(message, "Error al obtener información del servidor.")
+                    print(f"Error al obtener información del servidor: {e}")
+            else:
+                bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M] y asegúrate de que el DNI tenga 8 dígitos.")
         else:
-            bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M] y asegúrate de que el DNI tenga 8 dígitos.")
+            bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
     except (IndexError, ValueError):
         bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M].")
-
 
 @bot.message_handler(commands=['buscar'])
 def buscar_nombre(message):
