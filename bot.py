@@ -45,7 +45,7 @@ def initialize_files():
         with open(autorizados_file, 'w') as file:
             pass
 try:
-    with open(AUTHORIZED_USERS_FILE, 'r') as file:
+    with open(autorizados_file, 'r') as file:
         autorizados = file.read().splitlines()
 except FileNotFoundError:
     pass
