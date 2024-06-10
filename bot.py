@@ -821,4 +821,4 @@ def show_help(message):
 
 
 # Iniciar el bot
-bot.polling()
+bot.polling(none_stop=True, interval=0, timeout=20, port=5000)
