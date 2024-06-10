@@ -6,7 +6,6 @@ from telebot import util
 import time
 from bs4 import BeautifulSoup
 from requests import Session
-from flask import Flask
 
 session = Session()
 
@@ -18,10 +17,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Reemplaza 'YOUR_API_KEY' con el token de tu bot
 bot = telebot.TeleBot('7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU')
-
-#FLASK
-server = Flask(__name__)
-TOKEN = '7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU'
 
 # Lista blanca de usuarios autorizados para agregar búsquedas y ver la lista blanca
 authorized_users = [
@@ -823,19 +818,7 @@ def show_help(message):
 › /comprar - Información sobre como adquirir el bot.***
     """
     bot.reply_to(message, help_text, parse_mode="Markdown")
-#FLASK
-@server.route("/")
-def webhook():
-    bot.remove_webhook()
-    bot.set_webhook(url=f"https://{os.getenv('RENDER_EXTERNAL_HOSTNAME')}/bot{TOKEN}")
-    return "!", 200
 
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    bot.reply_to(message, message.text)
-
-if __name__ == "__main__":
-    server.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
 
 # Iniciar el bot
 bot.polling()
