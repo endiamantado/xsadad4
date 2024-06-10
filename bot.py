@@ -142,6 +142,7 @@ Domicilio:
     except (IndexError, ValueError):
         bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M].")
 
+
 @bot.message_handler(commands=['buscar'])
 def buscar_nombre(message):
     try:
