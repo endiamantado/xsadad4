@@ -84,7 +84,7 @@ def send_welcome(message):
 @bot.message_handler(commands=['dni'])
 def send_dni_info(message):
     try:
-        user_id = message.from_user.id
+        user_id = str(message.from_user.id)
 
         if user_id in authorized_users:
             command_params = message.text.split()
@@ -136,7 +136,6 @@ Domicilio:
             bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
     except (IndexError, ValueError):
         bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M].")
-
 
 @bot.message_handler(commands=['buscar'])
 def buscar_nombre(message):
