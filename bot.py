@@ -15,8 +15,18 @@ usuarios_iniciados = set()
 #desactivar esa advertencia pinchila
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+#FLASK
+# Token del bot de Telegram
+TOKEN = 'your_telegram_bot_token'
+# URL de tu aplicación en Render
+WEBHOOK_URL = f'https://api-ricardo-whatsapp.onrender.com/{TOKEN}'
+# Puerto configurado por Render
+PORT = int(os.environ.get('PORT', 3000))
+
 # Reemplaza 'YOUR_API_KEY' con el token de tu bot
 bot = telebot.TeleBot('7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU')
+#FLASK
+server = Flask(__name__)
 
 # Lista blanca de usuarios autorizados para agregar búsquedas y ver la lista blanca
 authorized_users = [
@@ -819,8 +829,24 @@ def show_help(message):
     """
     bot.reply_to(message, help_text, parse_mode="Markdown")
 
-# Eliminar el webhook
-bot.remove_webhook()
+@server.route('/' + TOKEN, methods=['POST'])
+def getMessage():
+    json_string = request.stream.read().decode('utf-8')
+    update = telebot.types.Update.de_json(json_string)
+    bot.process_new_updates([update])
+    return "!", 200
 
-# Iniciar el bot
-bot.polling()
+@server.route("/")
+def set_webhook():
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL)
+    return "Webhook set!", 200
+
+@server.route("/status")
+def status():
+    return "Bot is running", 200
+
+if __name__ == "__main__":
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL)
+    server.run(host="0.0.0.0", port=PORT)
