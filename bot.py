@@ -101,34 +101,32 @@ def send_dni_info(message):
                     response = session.get(url, verify=False)
                     response.raise_for_status()
                     data = response.json()
-                    print(f"/DNI UTILIZADO POR {user_id}, DNI Buscado: {dni}")
                     if data and 'data' in data and 'sisa' in data['data']:
-                        sisa_info = data['data']['sisa']
+    sisa_info = data['data']['sisa']
+    formatted_message = """```
+    Datos Básicos:
+    › Nombre: {nombre}
+    › Apellido: {apellido}
+    › DNI: {nroDocumento}
+    › Sexo: {sexo}
+    › Fecha de Nacimiento: {fechaNacimiento}
+    › Nacionalidad: {nacionalidad}
+    › Provincia de Nacimiento: {provinciaNacimiento}
+    › Estado Civil: {estadoCivil}
+    › Fallecido: {fallecido}
 
-                        formatted_message = """```
-Datos Básicos:
-› Nombre: {nombre}
-› Apellido: {apellido}
-› DNI: {nroDocumento}
-› Sexo: {sexo}
-› Fecha de Nacimiento: {fechaNacimiento}
-› Nacionalidad: {nacionalidad}
-› Provincia de Nacimiento: {provinciaNacimiento}
-› Estado Civil: {estadoCivil}
-› Fallecido: {fallecido}
-
-Domicilio:
-› Domicilio: {domicilio}
-› Localidad: {localidad}
-› Provincia: {provincia}
-› Departamento: {departamento}
-› Piso: {pisoDpto}
-› Código Postal: {codigoPostal}
-```""".format(**sisa_info)
-
-                        bot.reply_to(message, formatted_message, parse_mode='Markdown')
-                    else:
-                        bot.reply_to(message, "No se encontró información para el DNI y sexo proporcionados.")
+    Domicilio:
+    › Domicilio: {domicilio}
+    › Localidad: {localidad}
+    › Provincia: {provincia}
+    › Departamento: {departamento}
+    › Piso: {pisoDpto}
+    › Código Postal: {codigoPostal}
+    ```""".format(**sisa_info)
+    bot.reply_to(message, formatted_message, parse_mode='Markdown')
+    print(f"/DNI UTILIZADO POR {user_id}, DNI Buscado: {dni}")
+else:
+    bot.reply_to(message, "No se encontró información para el DNI y sexo proporcionados.")
                 except requests.RequestException as e:
                     bot.reply_to(message, "Error al obtener información del servidor.")
                     print(f"Error al obtener información del servidor: {e}")
