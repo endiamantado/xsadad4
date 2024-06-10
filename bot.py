@@ -36,7 +36,12 @@ authorized_users = [
 ]  
 
 # Diccionario para almacenar los usuarios agregados
-autorizados = {}
+autorizados = {
+    1877631700,
+    6158688112,
+    7118089387,
+    6952385968
+}
 
 # Cargar las búsquedas desde el archivo
 def load_autorizados():
