@@ -23,7 +23,7 @@ try:
     with open(autorizados_file, 'r') as file:
         authorized_users = set(map(int, file.read().splitlines()))
 except FileNotFoundError:
-    pass
+    authorized_users = set()
 
 # Reemplaza 'YOUR_API_KEY' con el token de tu bot
 TOKEN = '7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU'
@@ -86,7 +86,7 @@ def send_dni_info(message):
     try:
         user_id = message.from_user.id
 
-        if user_id in autorizados:
+        if user_id in authorized_users:
             command_params = message.text.split()
             if len(command_params) != 3:
                 raise ValueError("Número incorrecto de parámetros")
@@ -104,25 +104,25 @@ def send_dni_info(message):
                     if data and 'data' in data and 'sisa' in data['data']:
                         sisa_info = data['data']['sisa']
                         formatted_message = """```
-    Datos Básicos:
-    › Nombre: {nombre}
-    › Apellido: {apellido}
-    › DNI: {nroDocumento}
-    › Sexo: {sexo}
-    › Fecha de Nacimiento: {fechaNacimiento}
-    › Nacionalidad: {nacionalidad}
-    › Provincia de Nacimiento: {provinciaNacimiento}
-    › Estado Civil: {estadoCivil}
-    › Fallecido: {fallecido}
+Datos Básicos:
+› Nombre: {nombre}
+› Apellido: {apellido}
+› DNI: {nroDocumento}
+› Sexo: {sexo}
+› Fecha de Nacimiento: {fechaNacimiento}
+› Nacionalidad: {nacionalidad}
+› Provincia de Nacimiento: {provinciaNacimiento}
+› Estado Civil: {estadoCivil}
+› Fallecido: {fallecido}
 
-    Domicilio:
-    › Domicilio: {domicilio}
-    › Localidad: {localidad}
-    › Provincia: {provincia}
-    › Departamento: {departamento}
-    › Piso: {pisoDpto}
-    › Código Postal: {codigoPostal}
-    ```""".format(**sisa_info)
+Domicilio:
+› Domicilio: {domicilio}
+› Localidad: {localidad}
+› Provincia: {provincia}
+› Departamento: {departamento}
+› Piso: {pisoDpto}
+› Código Postal: {codigoPostal}
+```""".format(**sisa_info)
                         bot.reply_to(message, formatted_message, parse_mode='Markdown')
                         print(f"/DNI UTILIZADO POR {user_id}, DNI Buscado: {dni}")
                     else:
