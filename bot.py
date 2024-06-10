@@ -10,8 +10,8 @@ from flask import Flask, request
 
 session = Session()
 
-# Lista blanca de usuarios autorizados para agregar búsquedas y ver la lista blanca
-authorized_users = {
+# Lista blanca de usuarios ADMIN DEDL BOT
+ADMINS_USERS = {
     6952385968,
     7178592767
 }
@@ -85,9 +85,6 @@ def send_welcome(message):
 def send_dni_info(message):
     try:
         user_id = message.from_user.id
-        autorizados = set()
-        with open('whitelist.txt', 'r') as file:
-            autorizados = set(map(int, file.read().splitlines()))
 
         if user_id in autorizados:
             command_params = message.text.split()
@@ -147,12 +144,9 @@ Domicilio:
 def buscar_nombre(message):
     try:
         user_id = message.from_user.id
-        autorizados = set()
-        with open('whitelist.txt', 'r') as file:
-            autorizados = set(map(int, file.read().splitlines()))
 
         if user_id in autorizados:
-            command_params = message.text.split(maxsplit=1)
+            command_params = message.text.split()
             if len(command_params) != 2:
                 raise ValueError("Número incorrecto de parámetros")
 
@@ -222,12 +216,9 @@ def send_long_message(message, initial_text, results):
 def ip_command(message):
     try:
         user_id = message.from_user.id
-        autorizados = set()
-        with open('whitelist.txt', 'r') as file:
-            autorizados = set(map(int, file.read().splitlines()))
 
         if user_id in autorizados:
-            command_params = message.text.split(maxsplit=1)
+            command_params = message.text.split()
             if len(command_params) != 2:
                 raise ValueError("Número incorrecto de parámetros")
 
@@ -289,6 +280,93 @@ def send_user_id(message):
 @bot.message_handler(commands=['comprar'])
 def send_purchase_info(message):
     bot.reply_to(message, "Para adquirir acceso al bot, contacta a @afanando o @ciberforence para más información y precios.")
+
+@bot.message_handler(commands=['add'])
+def add_user_command(message):
+    if message.from_user.id not in ADMINS_USERS:
+        bot.send_message(message.chat.id, 'Esta función solo puede ser utilizada por los administradores del bot.')
+        return
+
+    command_params = message.text.split()
+    if len(command_params) != 2:
+        bot.reply_to(message, "Formato incorrecto. Usa /add [ID].")
+        return
+
+    user_id = command_params[1]
+
+    try:
+        if user_id in authorized_users:
+            bot.send_message(message.chat.id, 'Este usuario ya está autorizado.')
+            return
+
+        authorized_users.add(user_id)
+        with open(autorizados_file, 'a') as file:
+            file.write(user_id + '\n')
+
+        bot.send_message(message.chat.id, f'ID: {user_id} agregado a la lista de autorizados.')
+    except ValueError:
+        bot.reply_to(message, "El ID debe ser un número válido.")
+
+
+@bot.message_handler(commands=['me'])
+def check_user_status(message):
+    user_id = message.from_user.id
+    if user_id in authorizados:
+        bot.reply_to(message, 'Estás Autorizado.')
+    else:
+        bot.reply_to(message, 'No Estás Autorizado.')
+        
+
+@bot.message_handler(commands=['staff'])
+def show_help(message):
+    user_id = message.from_user.id
+    print(f"el usuario {user_id} quiso ver la lista de comandos")
+    if user_id not in ADMINS_USERS:
+        bot.reply_to(message, "No estás autorizado para usar este comando.")
+        return
+
+    help_text = """
+***🌟 Comandos Disponibles Para Admins 🌟
+› /add [ID] [CANTIDAD] - Agrega búsquedas a un usuario (autorizados).
+› /whitelist - Muestra la lista blanca de usuarios (autorizados).
+› /staff - Muestra todos los comandos disponibles
+    ***"""
+    bot.reply_to(message, help_text, parse_mode="Markdown")
+
+@bot.message_handler(commands=['whitelist'])
+def show_whitelist(message):
+    if message.from_user.id not in ADMINS_USERS:
+        bot.reply_to(message, 'Esta función solo puede ser sada por los admins.')
+        return
+
+    try:
+        with open('whitelist.txt', 'r') as file:
+            authorized_users = file.read().splitlines()
+        if authorized_users:
+            users_list = "\n".join(authorized_users)
+            bot.reply_to(message, f"***Usuarios en la whitelist:***\n{users_list}", parse_mode="markdown")
+        else:
+            bot.reply_to(message, 'La whitelist está vacía.')
+    except FileNotFoundError:
+        bot.reply_to(message, 'El archivo de la whitelist no se encontró.')
+    except Exception as e:
+        bot.reply_to(message, f'Ocurrió un error: {e}')
+
+@bot.message_handler(commands=['cmds'])
+def show_help(message):
+    user_id = message.from_user.id
+    print(f"el usuario {user_id} vio la lista de comandos")
+    help_text = """
+***🌟 Comandos Disponibles 🌟
+› /start - Inicia el bot y muestra un mensaje de bienvenida.
+› /dni [DNI] [F/M] - Realiza una consulta de DNI.
+› /buscar [NOMBRE/DNI/CUIL] - Realiza una busqueda de nombres.
+› /ip [IP_ADRESS] - Consulta la ubicacion de una IP.
+› /me - Verifica si estas autorizado.
+› /id - Muestra tu ID de usuario.
+› /comprar - Información sobre como adquirir el bot.***
+    """
+    bot.reply_to(message, help_text, parse_mode="Markdown")
 
 
 @server.route('/' + TOKEN, methods=['POST'])
