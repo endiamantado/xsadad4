@@ -101,7 +101,7 @@ def send_dni_info(message):
                     response = session.get(url, verify=False)
                     response.raise_for_status()
                     data = response.json()
-                    if data and 'data' in data and 'sisa' in data['data']:
+    if data and 'data' in data and 'sisa' in data['data']:
     sisa_info = data['data']['sisa']
     formatted_message = """```
     Datos Básicos:
