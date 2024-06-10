@@ -10,50 +10,26 @@ from flask import Flask, request
 
 session = Session()
 
-#guarda los usuarios q iniciaron el bot
-usuarios_iniciados = set()
-
-#desactivar esa advertencia pinchila
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-#FLASK
-# Token del bot de Telegram
-TOKEN = '7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU'
-# URL de tu aplicación en Render
-WEBHOOK_URL = f'https://xsadad4.onrender.com/{TOKEN}'
-# Puerto configurado por Render
-PORT = int(os.environ.get('PORT', 3000))
-
-# Reemplaza 'YOUR_API_KEY' con el token de tu bot
-bot = telebot.TeleBot('7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU')
-#FLASK
-server = Flask(__name__)
-
 # Lista blanca de usuarios autorizados para agregar búsquedas y ver la lista blanca
-authorized_users = [
+authorized_users = {
     6952385968,
     7178592767
-]  
+}
 
 # Archivo para almacenar los usuarios autorizados
 autorizados_file = 'whitelist.txt'
 
-autorizados = []
-
-def initialize_files():
-    if not os.path.exists(autorizados_file):
-        with open(autorizados_file, 'w') as file:
-            pass
 try:
     with open(autorizados_file, 'r') as file:
-        autorizados = file.read().splitlines()
+        authorized_users = set(map(int, file.read().splitlines()))
 except FileNotFoundError:
     pass
 
-def save_user(user_id):
-    with open(USERS_FILE, 'a') as file:
-        file.write(user_id + '\n')
+# Reemplaza 'YOUR_API_KEY' con el token de tu bot
+bot = telebot.TeleBot('YOUR_API_KEY')
 
+#FLASK
+server = Flask(__name__)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -106,7 +82,7 @@ def send_dni_info(message):
     try:
         # Verifica si el usuario está autorizado
         user_id = message.from_user.id
-        if str(user_id) not in autorizados:
+        if user_id not in autorizados_file:
             bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
             return
 
