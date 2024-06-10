@@ -21,6 +21,7 @@ bot = telebot.TeleBot('7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU')
 
 #FLASK
 server = Flask(__name__)
+TOKEN = '7166794411:AAF6TQ__3eIcCRC-c5yzeroa-6KM4nmoEZU'
 
 # Lista blanca de usuarios autorizados para agregar búsquedas y ver la lista blanca
 authorized_users = [
