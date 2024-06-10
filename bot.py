@@ -104,20 +104,6 @@ def send_welcome(message):
 @bot.message_handler(commands=['dni'])
 def send_dni_info(message):
     user_id = message.from_user.id
-    print(f"User ID: {user_id}")
-
-    # Leer el archivo whitelist.txt
-    try:
-        with open('whitelist.txt', 'r') as f:
-            autorizados = [int(line.strip()) for line in f.readlines()]
-        print(f"Autorizados: {autorizados}")
-    except FileNotFoundError:
-        bot.reply_to(message, "No se encontró el archivo de la whitelist.")
-        return
-    except ValueError:
-        bot.reply_to(message, "Error al procesar el archivo de la whitelist.")
-        return
-
     if user_id in autorizados:
         try:
             command_params = message.text.split()
