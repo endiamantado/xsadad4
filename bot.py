@@ -35,29 +35,24 @@ authorized_users = [
     7178592767
 ]  
 
-# Diccionario para almacenar los usuarios agregados
-autorizados = {
-    1877631700,
-    6158688112,
-    7118089387,
-    6952385968
-}
+# Archivo para almacenar los usuarios autorizados
+autorizados_file = 'whitelist.txt'
 
-# Cargar las búsquedas desde el archivo
-def load_autorizados():
-    global autorizados
-    autorizados = {}  # Limpiamos el diccionario para cargar los datos actualizados
-    if os.path.exists('whitelist.txt'):
-        with open('whitelist.txt', 'r') as file:
-            for line in file:
-                try:
-                    user_id = int(line.strip())
-                    autorizados[user_id] = 0  # Agregamos el ID con un contador inicial de 0
-                except ValueError:
-                    print(f"Error al procesar la línea: {line.strip()}")
+autorizados = []
 
-# Cargar la whitelist al iniciar el bot
-load_autorizados()
+def initialize_files():
+    if not os.path.exists(autorizados_file):
+        with open(autorizados_file, 'w') as file:
+            pass
+try:
+    with open(AUTHORIZED_USERS_FILE, 'r') as file:
+        autorizados = file.read().splitlines()
+except FileNotFoundError:
+    pass
+
+def save_user(user_id):
+    with open(USERS_FILE, 'a') as file:
+        file.write(user_id + '\n')
 
 
 @bot.message_handler(commands=['start'])
@@ -108,75 +103,65 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['dni'])
 def send_dni_info(message):
-    user_id = message.from_user.id
-    if user_id in autorizados:
-        try:
-            command_params = message.text.split()
-            if len(command_params) != 3:
-                raise ValueError("Número incorrecto de parámetros")
+    try:
+        # Verifica si el usuario está autorizado
+        user_id = message.from_user.id
+        if str(user_id) not in autorizados:
+            bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
+            return
 
-            dni = command_params[1]
-            sexo = command_params[2].upper()
+        # Obtiene los parámetros del comando
+        command_params = message.text.split()
+        if len(command_params) != 3:
+            raise ValueError("Número incorrecto de parámetros")
 
-            bot.reply_to(message, "🔍 Consultando DNI...")
-            if len(dni) == 8 and dni.isdigit() and sexo in ['F', 'M']:
-                url = f"https://teleconsultas-gov.onrender.com/zeakapi/{dni}/{sexo}"
-                try:
-                    response = session.get(url, verify=False)
-                    response.raise_for_status()
-                    data = response.json()
-                    print(f"/DNI UTILIZADO POR {user_id}, DNI Buscado: {dni}")
-                    if data and 'data' in data and 'sisa' in data['data']:
-                        sisa_info = data['data']['sisa']
+        dni = command_params[1]
+        sexo = command_params[2].upper()
 
-                        coverage_info = []
-                        if 'cobertura' in sisa_info and sisa_info['cobertura'] is not None:
-                            for coverage in sisa_info['cobertura']:
-                                coverage_info.append(
-                                    f"› Tipo de Cobertura: {coverage.get('tipoCobertura', 'N/A')}\n"
-                                    f"  Nombre Obra Social: {coverage.get('nombreObraSocial', 'N/A')}\n"
-                                    f"  RNOs: {coverage.get('rnos', 'N/A')}\n"
-                                    f"  Vigencia Desde: {coverage.get('vigenciaDesde', 'N/A')}\n"
-                                    f"  Fecha de Actualización: {coverage.get('fechaActualizacion', 'N/A')}\n"
-                                    f"  Origen: {coverage.get('origen', 'N/A')}\n")
+        # Consulta la información del DNI
+        bot.reply_to(message, "🔍 Consultando DNI...")
+        if len(dni) == 8 and dni.isdigit() and sexo in ['F', 'M']:
+            url = f"https://teleconsultas-gov.onrender.com/zeakapi/{dni}/{sexo}"
+            try:
+                response = session.get(url, verify=False)
+                response.raise_for_status()
+                data = response.json()
+                print(f"/DNI UTILIZADO POR {user_id}, DNI Buscado: {dni}")
+                if data and 'data' in data and 'sisa' in data['data']:
+                    sisa_info = data['data']['sisa']
 
-                        coverage_str = "\n".join(coverage_info)
-
-                        formatted_message = (f"""```
-Datos Basicos:
-› Nombre: {sisa_info.get('nombre', 'N/A')}
-› Apellido: {sisa_info.get('apellido', 'N/A')}
-› DNI: {sisa_info.get('nroDocumento', 'N/A')}
-› Sexo: {sisa_info.get('sexo', 'N/A')}
-› Fecha de Nacimiento: {sisa_info.get('fechaNacimiento', 'N/A')}
-› Nacionalidad: {sisa_info.get('nacionalidad', 'N/A')}
-› Provincia de Nacimiento: {sisa_info.get('provinciaNacimiento', 'N/A')}
-› Estado Civil: {sisa_info.get('estadoCivil', 'N/A')}
-› Fallecido: {sisa_info.get('fallecido', 'N/A')}
+                    # Construye el mensaje de respuesta con la información del DNI
+                    formatted_message = """```
+Datos Básicos:
+› Nombre: {nombre}
+› Apellido: {apellido}
+› DNI: {nroDocumento}
+› Sexo: {sexo}
+› Fecha de Nacimiento: {fechaNacimiento}
+› Nacionalidad: {nacionalidad}
+› Provincia de Nacimiento: {provinciaNacimiento}
+› Estado Civil: {estadoCivil}
+› Fallecido: {fallecido}
 
 Domicilio:
-› Domicilio: {sisa_info.get('domicilio', 'N/A')}
-› Localidad: {sisa_info.get('localidad', 'N/A')}
-› Provincia: {sisa_info.get('provincia', 'N/A')}
-› Departamento: {sisa_info.get('departamento', 'N/A')}
-› Piso: {sisa_info.get('pisoDpto', 'N/A')}
-› Código Postal: {sisa_info.get('codigoPostal', 'N/A')}
+› Domicilio: {domicilio}
+› Localidad: {localidad}
+› Provincia: {provincia}
+› Departamento: {departamento}
+› Piso: {pisoDpto}
+› Código Postal: {codigoPostal}
+```""".format(**sisa_info)
 
-Información de Cobertura:
-{coverage_str}
-```""")
-                        bot.reply_to(message, formatted_message, parse_mode='Markdown')
-                    else:
-                        bot.reply_to(message, "No se encontró información para el DNI y sexo proporcionados.")
-                except requests.RequestException as e:
-                    bot.reply_to(message, "Error al obtener información del servidor.")
-                    print(f"Error al obtener información del servidor: {e}")
-            else:
-                bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M] y asegúrate de que el DNI tenga 8 dígitos.")
-        except (IndexError, ValueError):
-            bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M].")
-    else:
-        bot.reply_to(message, "No estás autorizado para usar este comando, para adquirir este bot contacta a @afanando @ciberforence.")
+                    bot.reply_to(message, formatted_message, parse_mode='Markdown')
+                else:
+                    bot.reply_to(message, "No se encontró información para el DNI y sexo proporcionados.")
+            except requests.RequestException as e:
+                bot.reply_to(message, "Error al obtener información del servidor.")
+                print(f"Error al obtener información del servidor: {e}")
+        else:
+            bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M] y asegúrate de que el DNI tenga 8 dígitos.")
+    except (IndexError, ValueError):
+        bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M].")
 
 
 @bot.message_handler(commands=['buscar'])
@@ -337,25 +322,34 @@ def send_purchase_info(message):
     bot.reply_to(message, "Para comprar el bot, contacta a @Afanando o a @ciberforence")
 
 @bot.message_handler(commands=['add'])
-def add_to_whitelist(message):
-    user_id = message.from_user.id
-    if user_id in authorized_users:
-        command_params = message.text.split()
-        if len(command_params) != 2:
-            bot.reply_to(message, "Formato incorrecto. Usa /add [ID].")
+def add_user_command(message):
+    # Verifica si el ID del usuario que envió el mensaje está en la lista de usuarios autorizados
+    if str(message.from_user.id) not in authorized_users:
+        bot.send_message(message.chat.id, 'Esta función solo puede ser utilizada por el administrador del bot.')
+        return
+
+    # Obtiene el ID del usuario a agregar de los parámetros del comando
+    command_params = message.text.split()
+    if len(command_params) != 2:
+        bot.reply_to(message, "Formato incorrecto. Usa /add [ID].")
+        return
+
+    user_id = command_params[1]
+
+    try:
+        # Verifica si el usuario ya está en la lista de usuarios autorizados
+        if user_id in authorized_users:
+            bot.send_message(message.chat.id, 'Este usuario ya está autorizado.')
             return
-        try:
-            new_id = int(command_params[1])
-            with open('whitelist.txt', 'a') as file:
-                file.write(str(new_id) + '\n')
-            bot.reply_to(message, f"ID {new_id} agregado a la whitelist.")
-        except ValueError:
-            bot.reply_to(message, "El ID debe ser un número válido.")
-    else:
-        bot.reply_to(
-            message,
-            "No tienes permiso para agregar usuarios a la whitelist."
-        )
+
+        # Agrega el usuario a la lista de usuarios autorizados y guarda la lista en el archivo
+        authorized_users.add(user_id)
+        with open(AUTHORIZED_USERS_FILE, 'a') as file:
+            file.write(user_id + '\n')
+
+        bot.send_message(message.chat.id, f'Usuario {user_id} agregado a la lista de autorizados.')
+    except ValueError:
+        bot.reply_to(message, "El ID debe ser un número válido.")
 
 @bot.message_handler(commands=['whitelist'])
 def show_whitelist(message):
