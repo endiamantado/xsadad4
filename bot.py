@@ -77,12 +77,18 @@ def send_welcome(message):
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
 🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""")
 
+
+
 @bot.message_handler(commands=['dni'])
 def send_dni_info(message):
     try:
         # Verifica si el usuario está autorizado
         user_id = message.from_user.id
-        if user_id not in autorizados_file:
+        authorizados = set()
+        with open('whitelist.txt', 'r') as file:
+            authorizados = set(map(int, file.read().splitlines()))
+
+        if user_id not in authorizados:
             bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
             return
 
