@@ -143,61 +143,62 @@ def buscar_nombre(message):
     try:
         user_id = str(message.from_user.id)
 
-        if user_id in authorized_users:
-            command_params = message.text.split()
-            if len(command_params) != 2:
-                raise ValueError("Número incorrecto de parámetros")
+        if user_id not in authorized_users and user_id not in ADMINS_USERS:
+            bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
+            return
 
-            query = command_params[1]
+        command_params = message.text.split()
+        if len(command_params) != 2:
+            raise ValueError("Número incorrecto de parámetros")
 
-            bot.reply_to(message, "🔍 Buscando...")
+        query = command_params[1]
 
-            all_results = []
-            for pagina in range(1, 5):
-                payload = {'nombre': query, 'page': pagina}
-                headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
-                }
+        bot.reply_to(message, "🔍 Buscando...")
 
-                try:
-                    response = requests.post('https://test.infoexperto.com.ar/buscar.php', data=payload, headers=headers, timeout=10)
-                    if response.status_code != 200:
-                        bot.reply_to(message, f"Error interno en la API")
-                        continue
+        all_results = []
+        for pagina in range(1, 5):
+            payload = {'nombre': query, 'page': pagina}
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
+            }
 
-                    soup = BeautifulSoup(response.text, 'html.parser')
-                    table = soup.find('table')
-                    if not table:
-                        bot.reply_to(message, "No se encontraron resultados en esta página.")
-                        continue
+            try:
+                response = requests.post('https://test.infoexperto.com.ar/buscar.php', data=payload, headers=headers, timeout=10)
+                if response.status_code != 200:
+                    bot.reply_to(message, f"Error interno en la API")
+                    continue
 
-                    for row in table.find_all('tr')[1:]:
-                        columns = row.find_all('td')
-                        if len(columns) == 4:
-                            cuit = columns[0].text.strip()
-                            dni = columns[1].text.strip()
-                            nombre = columns[2].text.strip()
-                            clase = columns[3].text.strip()
-                            all_results.append(f"{cuit} - {nombre}")
+                soup = BeautifulSoup(response.text, 'html.parser')
+                table = soup.find('table')
+                if not table:
+                    bot.reply_to(message, "No se encontraron resultados en esta página.")
+                    continue
 
-                except requests.exceptions.RequestException as e:
-                    bot.reply_to(message, f'Error de conexión: {e}')
-                    return
+                for row in table.find_all('tr')[1:]:
+                    columns = row.find_all('td')
+                    if len(columns) == 4:
+                        cuit = columns[0].text.strip()
+                        dni = columns[1].text.strip()
+                        nombre = columns[2].text.strip()
+                        clase = columns[3].text.strip()
+                        all_results.append(f"{cuit} - {nombre}")
 
-                time.sleep(5)
+            except requests.exceptions.RequestException as e:
+                bot.reply_to(message, f'Error de conexión: {e}')
+                return
 
-            if all_results:
-                send_long_message(message, "Resultados encontrados:", all_results[:70])
-            else:
-                bot.reply_to(message, "No se encontraron resultados.")
+            time.sleep(5)
 
-            print(f"COMANDO /BUSCAR EJECUTADO POR: {user_id}")
+        if all_results:
+            send_long_message(message, "Resultados encontrados:", all_results[:70])
         else:
-            bot.reply_to(message, "No estás autorizado para usar este comando, para adquirir este bot contacta a @afanando o @ciberforence.")
+            bot.reply_to(message, "No se encontraron resultados.")
+
+        print(f"COMANDO /BUSCAR EJECUTADO POR: {user_id}")
     except (IndexError, ValueError) as e:
         bot.reply_to(message, str(e))
-
+        
 def send_long_message(message, initial_text, results):
     max_message_length = 4096
     chat_id = message.chat.id
@@ -216,24 +217,27 @@ def send_long_message(message, initial_text, results):
 def ip_command(message):
     try:
         user_id = message.from_user.id
+        command_params = message.text.split()
 
-        if user_id in autorizados:
-            command_params = message.text.split()
-            if len(command_params) != 2:
-                raise ValueError("Número incorrecto de parámetros")
+        if user_id not in authorized_users and user_id not in ADMINS_USERS:
+            bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
+            return
 
-            ip_address = command_params[1]
+        if len(command_params) != 2:
+            raise ValueError("Número incorrecto de parámetros")
 
-            response = requests.get(f'http://ip-api.com/json/{ip_address}')
+        ip_address = command_params[1]
 
-            if response.status_code == 200:
-                data = response.json()
-                print(f"/IP UTILIZADO POR {user_id}")
-                if data['status'] == 'fail':
-                    bot.reply_to(message, f"No se encontró información para la IP: {ip_address}")
-                    return
+        response = requests.get(f'http://ip-api.com/json/{ip_address}')
 
-                formatted_response = f"""```
+        if response.status_code == 200:
+            data = response.json()
+            print(f"/IP UTILIZADO POR {user_id}")
+            if data['status'] == 'fail':
+                bot.reply_to(message, f"No se encontró información para la IP: {ip_address}")
+                return
+
+            formatted_response = f"""```
 IP: {ip_address}
 Status: {data.get('status', 'N/A')}
 País: {data.get('country', 'N/A')}
@@ -247,30 +251,13 @@ ISP: {data.get('isp', 'N/A')}
 Organización: {data.get('org', 'N/A')}
 AS: {data.get('as', 'N/A')}
 ```"""
-                bot.reply_to(message, formatted_response, parse_mode='Markdown')
-            else:
-                bot.reply_to(message, f"Error al consultar la información de la IP: {ip_address}")
+            bot.reply_to(message, formatted_response, parse_mode='Markdown')
         else:
-            bot.reply_to(message, "No estás autorizado para usar este comando.")
+            bot.reply_to(message, f"Error al consultar la información de la IP: {ip_address}")
     except (IndexError, ValueError) as e:
         bot.reply_to(message, str(e))
     except requests.exceptions.RequestException as e:
         bot.reply_to(message, f'Error de conexión: {e}')
-
-@bot.message_handler(commands=['me'])
-def check_user_status(message):
-    user_id = message.from_user.id
-    try:
-        with open('whitelist.txt', 'r') as file:
-            authorized_users = file.read().splitlines()
-        if str(user_id) in authorized_users:
-            bot.reply_to(message, 'Estás en la whitelist.')
-        else:
-            bot.reply_to(message, 'No estás en la whitelist.')
-    except FileNotFoundError:
-        bot.reply_to(message, 'El archivo de la whitelist no se encontró.')
-    except Exception as e:
-        bot.reply_to(message, f'Ocurrió un error: {e}')
 
 @bot.message_handler(commands=['id'])
 def send_user_id(message):
@@ -311,10 +298,17 @@ def add_user_command(message):
 @bot.message_handler(commands=['me'])
 def check_user_status(message):
     user_id = message.from_user.id
-    if user_id in authorizados:
-        bot.reply_to(message, 'Estás Autorizado.')
-    else:
-        bot.reply_to(message, 'No Estás Autorizado.')
+    try:
+        with open('whitelist.txt', 'r') as file:
+            authorized_users = file.read().splitlines()
+        if str(user_id) in authorized_users:
+            bot.reply_to(message, 'Estás Autorizado.')
+        else:
+            bot.reply_to(message, 'No Estás Autorizado.')
+    except FileNotFoundError:
+        bot.reply_to(message, 'El archivo de la whitelist no se encontró culea.')
+    except Exception as e:
+        bot.reply_to(message, f'Ocurrió un error: {e}')
         
 
 @bot.message_handler(commands=['staff'])
