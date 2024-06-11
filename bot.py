@@ -37,12 +37,24 @@ PORT = int(os.environ.get('PORT', 5000))
 # FLASK
 server = Flask(__name__)
 
+@bot.message_handler(commands=['comprar'])
+def send_purchase_info(message):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("ZEAK", url="https://t.me/afanando"))
+    markup.add(types.InlineKeyboardButton("Forence", url="https://t.me/ciberforence"))
+
+    bot.reply_to(message, "Para Adquirir el Acceso al Bot Contacta a Soporte", reply_markup=markup)
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     user = message.from_user
     username = user.username
     user_id = user.id
     print(f"EJECUTO /START: {user_id}")
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("Canal", url="https://t.me/EnpungaUpdates"))
+    markup.add(types.InlineKeyboardButton("Status", url="https://t.me/statusenpunga"))
+    markup.add(types.InlineKeyboardButton("Referencias", url="https://t.me/enpungarefes"))
     if username:
         bot.reply_to(message, f"""🌟 Bienvenido, @{username} ! 🌟
 
