@@ -86,24 +86,27 @@ def send_dni_info(message):
     try:
         user_id = str(message.from_user.id)
 
-        if user_id in authorized_users:
-            command_params = message.text.split()
-            if len(command_params) != 3:
-                raise ValueError("Número incorrecto de parámetros")
+        if user_id not in authorized_users and user_id not in ADMINS_USERS:
+            bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
+            return
 
-            dni = command_params[1]
-            sexo = command_params[2].upper()
+        command_params = message.text.split()
+        if len(command_params) != 3:
+            raise ValueError("Número incorrecto de parámetros")
 
-            bot.reply_to(message, "🔍 Consultando DNI...")
-            if len(dni) == 8 and dni.isdigit() and sexo in ['F', 'M']:
-                url = f"https://teleconsultas-gov.onrender.com/zeakapi/{dni}/{sexo}"
-                try:
-                    response = session.get(url, verify=False)
-                    response.raise_for_status()
-                    data = response.json()
-                    if data and 'data' in data and 'sisa' in data['data']:
-                        sisa_info = data['data']['sisa']
-                        formatted_message = """```
+        dni = command_params[1]
+        sexo = command_params[2].upper()
+
+        bot.reply_to(message, "🔍 Consultando DNI...")
+        if len(dni) == 8 and dni.isdigit() and sexo in ['F', 'M']:
+            url = f"https://teleconsultas-gov.onrender.com/zeakapi/{dni}/{sexo}"
+            try:
+                response = session.get(url, verify=False)
+                response.raise_for_status()
+                data = response.json()
+                if data and 'data' in data and 'sisa' in data['data']:
+                    sisa_info = data['data']['sisa']
+                    formatted_message = """```
 Datos Básicos:
 › Nombre: {nombre}
 › Apellido: {apellido}
@@ -123,17 +126,15 @@ Domicilio:
 › Piso: {pisoDpto}
 › Código Postal: {codigoPostal}
 ```""".format(**sisa_info)
-                        bot.reply_to(message, formatted_message, parse_mode='Markdown')
-                        print(f"/DNI UTILIZADO POR {user_id}, DNI Buscado: {dni}")
-                    else:
-                        bot.reply_to(message, "No se encontró información para el DNI y sexo proporcionados.")
-                except requests.RequestException as e:
-                    bot.reply_to(message, "Error al obtener información del servidor.")
-                    print(f"Error al obtener información del servidor: {e}")
-            else:
-                bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M] y asegúrate de que el DNI tenga 8 dígitos.")
+                    bot.reply_to(message, formatted_message, parse_mode='Markdown')
+                    print(f"/DNI UTILIZADO POR {user_id}, DNI Buscado: {dni}")
+                else:
+                    bot.reply_to(message, "No se encontró información para el DNI y sexo proporcionados.")
+            except requests.RequestException as e:
+                bot.reply_to(message, "Error al obtener información del servidor.")
+                print(f"Error al obtener información del servidor: {e}")
         else:
-            bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
+            bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M] y asegúrate de que el DNI tenga 8 dígitos.")
     except (IndexError, ValueError):
         bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M].")
 
