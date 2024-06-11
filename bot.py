@@ -170,7 +170,7 @@ def buscar_nombre(message):
 
         bot.reply_to(message, "🔍 Buscando...")
 
-        all_results = []
+        all_results = set()  # Utilizamos un conjunto para evitar duplicados
         for pagina in range(1, 5):
             payload = {'nombre': query, 'page': pagina}
             headers = {
@@ -197,7 +197,8 @@ def buscar_nombre(message):
                         dni = columns[1].text.strip()
                         nombre = columns[2].text.strip()
                         clase = columns[3].text.strip()
-                        all_results.append(f"{cuit} - {nombre}")
+                        result = f"{cuit} - {nombre} - {clase}"
+                        all_results.add(result)  # Agregamos el resultado al conjunto
 
             except requests.exceptions.RequestException as e:
                 bot.reply_to(message, f'Error de conexión: {e}')
@@ -206,27 +207,13 @@ def buscar_nombre(message):
             time.sleep(5)
 
         if all_results:
-            send_long_message(message, "Resultados encontrados:", all_results[:70])
+            send_long_message(message, "Resultados encontrados:", list(all_results)[:70])
         else:
             bot.reply_to(message, "No se encontraron resultados.")
 
         print(f"COMANDO /BUSCAR EJECUTADO POR: {user_id}")
     except (IndexError, ValueError) as e:
         bot.reply_to(message, str(e))
-        
-def send_long_message(message, initial_text, results):
-    max_message_length = 4096
-    chat_id = message.chat.id
-    text = initial_text + "\n"
-    for result in results:
-        if len(text) + len(result) + 1 > max_message_length:
-            bot.send_message(chat_id, text)
-            text = ""
-        text += result + "\n"
-    
-    # Enviar el texto restante
-    if text.strip() != initial_text:
-        bot.send_message(chat_id, text)
 
 @bot.message_handler(commands=['ip'])
 def ip_command(message):
