@@ -217,8 +217,8 @@ def buscar_nombre(message):
 
 def send_long_message(message, header, results):
     message_text = f"{header}\n"
-    for i, result in enumerate(results, start=1):
-        message_text += f"{i}. {result}\n"
+    for result in results:
+        message_text += f"{result}\n"
     bot.send_message(message.chat.id, message_text)
 
 @bot.message_handler(commands=['ip'])
