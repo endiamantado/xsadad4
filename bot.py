@@ -160,7 +160,7 @@ def buscar_nombre(message):
             bot.send_message(message.chat.id, '🚫 No tienes permiso para usar este comando, para comprar el bot /comprar.')
             return
 
-        command_params = message.text.split()
+        command_params = message.text.split(maxsplit=1)
         if len(command_params) != 2:
             raise ValueError("Número incorrecto de parámetros")
 
