@@ -1,9 +1,10 @@
 import telebot
 import requests
 import urllib3
+import time
 import os
 from telebot import util
-import time
+from telebot import types
 from bs4 import BeautifulSoup
 from requests import Session
 from flask import Flask, request
@@ -87,7 +88,7 @@ def send_dni_info(message):
         user_id = str(message.from_user.id)
 
         if user_id not in authorized_users and user_id not in ADMINS_USERS:
-            bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
+            bot.send_message(message.chat.id, '🚫 No tienes permiso para usar este comando, para comprar el bot /comprar')
             return
 
         command_params = message.text.split()
@@ -144,7 +145,7 @@ def buscar_nombre(message):
         user_id = str(message.from_user.id)
 
         if user_id not in authorized_users and user_id not in ADMINS_USERS:
-            bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
+            bot.send_message(message.chat.id, '🚫 No tienes permiso para usar este comando, para comprar el bot /comprar.')
             return
 
         command_params = message.text.split()
@@ -220,7 +221,7 @@ def ip_command(message):
         command_params = message.text.split()
 
         if user_id not in authorized_users and user_id not in ADMINS_USERS:
-            bot.send_message(message.chat.id, 'No estás autorizado para usar este comando.')
+            bot.send_message(message.chat.id, '🚫 No tienes permiso para usar este comando, para comprar el bot /comprar.')
             return
 
         if len(command_params) != 2:
@@ -266,7 +267,11 @@ def send_user_id(message):
 
 @bot.message_handler(commands=['comprar'])
 def send_purchase_info(message):
-    bot.reply_to(message, "Para adquirir acceso al bot, contacta a @afanando o @ciberforence para más información y precios.")
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("ZEAK", url="https://t.me/afanando"))
+    markup.add(types.InlineKeyboardButton("Forence", url="https://t.me/ciberforence"))
+
+    bot.reply_to(message, "Para Adquirir el Acceso al Bot Contacta a Soporte", reply_markup=markup)
 
 @bot.message_handler(commands=['add'])
 def add_user_command(message):
