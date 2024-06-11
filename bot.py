@@ -205,6 +205,11 @@ def buscar_nombre(message):
                 return
 
             time.sleep(5)
+def send_long_message(message, header, results):
+    message_text = f"{header}\n"
+    for i, result in enumerate(results, start=1):
+        message_text += f"{i}. {result}\n"
+    bot.send_message(message.chat.id, message_text)
 
         if all_results:
             send_long_message(message, "Resultados encontrados:", list(all_results)[:70])
@@ -214,6 +219,7 @@ def buscar_nombre(message):
         print(f"COMANDO /BUSCAR EJECUTADO POR: {user_id}")
     except (IndexError, ValueError) as e:
         bot.reply_to(message, str(e))
+
 
 @bot.message_handler(commands=['ip'])
 def ip_command(message):
