@@ -140,9 +140,9 @@ Domicilio:
 @bot.message_handler(commands=['buscar'])
 def buscar_nombre(message):
     try:
-        user_id = message.from_user.id
+        user_id = str(message.from_user.id)
 
-        if user_id in autorizados:
+        if user_id in authorized_users:
             command_params = message.text.split()
             if len(command_params) != 2:
                 raise ValueError("Número incorrecto de parámetros")
@@ -206,7 +206,9 @@ def send_long_message(message, initial_text, results):
             bot.send_message(chat_id, text)
             text = ""
         text += result + "\n"
-    if text:
+    
+    # Enviar el texto restante
+    if text.strip() != initial_text:
         bot.send_message(chat_id, text)
 
 @bot.message_handler(commands=['ip'])
