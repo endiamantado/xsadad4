@@ -272,7 +272,7 @@ def check_user_status(message):
 @bot.message_handler(commands=['id'])
 def send_user_id(message):
     user_id = message.from_user.id
-    bot.reply_to(message, f"Tu ID de usuario es: {user_id}")
+    bot.reply_to(message, f"{user_id}")
 
 @bot.message_handler(commands=['comprar'])
 def send_purchase_info(message):
