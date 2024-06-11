@@ -301,7 +301,7 @@ def add_user_command(message):
 
         authorized_users.add(user_id)
         with open(autorizados_file, 'a') as file:
-            file.write(f"{user_id} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            file.write(f"{user_id} - {datetime.now().strftime('%Y-%m-%d')}\n")
 
         bot.send_message(message.chat.id, f'ID: {user_id} agregado a la lista de autorizados.')
 
