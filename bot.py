@@ -55,6 +55,8 @@ def send_welcome(message):
     markup.add(types.InlineKeyboardButton("Canal", url="https://t.me/EnpungaUpdates"))
     markup.add(types.InlineKeyboardButton("Status", url="https://t.me/statusenpunga"))
     markup.add(types.InlineKeyboardButton("Referencias", url="https://t.me/enpungarefes"))
+    markup.add(types.InlineKeyboardButton("Grupo", url="https://t.me/AfanandoGroup"))
+
     if username:
         bot.reply_to(message, f"""🌟 Bienvenido, @{username} ! 🌟
 
@@ -73,7 +75,7 @@ def send_welcome(message):
 🔐 Para acceder a estas herramientas requiere una suscripción.
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""")
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
     else:
         bot.reply_to(message, """🌟 Bienvenido 🌟
 
@@ -92,7 +94,7 @@ def send_welcome(message):
 🔐 Para acceder a estas herramientas requiere una suscripción.
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""")
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
 
 @bot.message_handler(commands=['dni'])
 def send_dni_info(message):
