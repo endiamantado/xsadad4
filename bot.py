@@ -8,6 +8,7 @@ from telebot import types
 from bs4 import BeautifulSoup
 from requests import Session
 from flask import Flask, request
+from datetime import datetime, timedelta
 
 session = Session()
 
@@ -300,12 +301,27 @@ def add_user_command(message):
 
         authorized_users.add(user_id)
         with open(autorizados_file, 'a') as file:
-            file.write(user_id + '\n')
+            file.write(f"{user_id} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
         bot.send_message(message.chat.id, f'ID: {user_id} agregado a la lista de autorizados.')
+
+        # Programar la eliminación del usuario después de un mes
+        delete_date = datetime.now() + timedelta(days=30)
+        scheduler.add_job(delete_user_from_whitelist, 'date', run_date=delete_date, args=[user_id])
+
     except ValueError:
         bot.reply_to(message, "El ID debe ser un número válido.")
 
+def delete_user_from_whitelist(user_id):
+    try:
+        with open(autorizados_file, 'r') as file:
+            lines = file.readlines()
+        with open(autorizados_file, 'w') as file:
+            for line in lines:
+                if user_id not in line:
+                    file.write(line)
+    except FileNotFoundError:
+        pass  # El archivo aún no existe, no se necesita hacer nada
 
 @bot.message_handler(commands=['me'])
 def check_user_status(message):
