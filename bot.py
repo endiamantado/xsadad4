@@ -12,6 +12,10 @@ from datetime import datetime, timedelta
 
 session = Session()
 
+##ENVIAR MENSAJE A CADA USUARIO
+started_users = set()
+##ENVIAR MENSAJE A CADA USUARIO
+
 # Lista blanca de usuarios ADMIN DEDL BOT
 ADMINS_USERS = {
     6952385968,
@@ -34,6 +38,10 @@ bot = telebot.TeleBot(TOKEN)
 # URL del webhook
 WEBHOOK_URL = "https://xsadad4.onrender.com/" + TOKEN
 PORT = int(os.environ.get('PORT', 5000))
+
+##ENVIAR MENSAJE A CADA USUARIO
+CHANNEL_ID = '-1002241159685'
+##ENVIAR MENSAJE A CADA USUARIO
 
 # FLASK
 server = Flask(__name__)
@@ -351,6 +359,17 @@ def show_whitelist(message):
     except Exception as e:
         bot.reply_to(message, f'Ocurrió un error: {e}')
 
+##ENVIAR MENSAJE A CADA USUARIO
+@bot.message_handler(commands=['starts'])
+def show_started_users(message):
+    # Generar el mensaje con la lista de usuarios que han iniciado el bot
+    if started_users:
+        users_list = "\n".join(str(user) for user in started_users)
+        bot.send_message(message.chat.id, f"Usuarios que han iniciado el bot:\n{users_list}")
+    else:
+        bot.send_message(message.chat.id, "Ningún usuario ha iniciado el bot.")
+##ENVIAR MENSAJE A CADA USUARIO
+
 @bot.message_handler(commands=['cmds'])
 def show_help(message):
     user_id = message.from_user.id
@@ -366,6 +385,17 @@ def show_help(message):
 › /comprar - Información sobre como adquirir el bot.***
     """
     bot.reply_to(message, help_text, parse_mode="Markdown")
+
+##ENVIAR MENSAJE A CADA USUARIO
+@bot.message_handler(content_types=['text'], func=lambda message: message.chat.id == CHANNEL_ID)
+def handle_channel_message(message):
+    # Aquí puedes procesar el mensaje del canal
+    print(f"Mensaje recibido del canal: {message.text}")
+    
+    # Enviar el mensaje a todos los usuarios que iniciaron el bot
+    for user_id in started_users:
+        bot.send_message(user_id, message.text)
+##ENVIAR MENSAJE A CADA USUARIO
 
 
 @server.route('/' + TOKEN, methods=['POST'])
