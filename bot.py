@@ -268,6 +268,7 @@ AS: {data.get('as', 'N/A')}
     except requests.exceptions.RequestException as e:
         bot.reply_to(message, f'Error de conexión: {e}')
 
+
 @bot.message_handler(commands=['id'])
 def send_user_id(message):
     user_id = message.from_user.id
@@ -303,7 +304,7 @@ def add_user_command(message):
         with open(autorizados_file, 'a') as file:
             file.write(f"{user_id} - {datetime.now().strftime('%Y-%m-%d')}\n")
 
-        bot.send_message(message.chat.id, f'ID: {user_id} agregado a la lista de autorizados.')
+        bot.send_message(message.chat.id, f'ID: {user_id} agregado a la lista de autorizados por 1 Mes exitosamente.')
 
         # Programar la eliminación del usuario después de un mes
         delete_date = datetime.now() + timedelta(days=30)
