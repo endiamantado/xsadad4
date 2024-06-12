@@ -12,10 +12,6 @@ from datetime import datetime, timedelta
 
 session = Session()
 
-##ENVIAR MENSAJE A CADA USUARIO
-started_users = set()
-##ENVIAR MENSAJE A CADA USUARIO
-
 # Lista blanca de usuarios ADMIN DEDL BOT
 ADMINS_USERS = {
     6952385968,
@@ -45,6 +41,15 @@ CHANNEL_ID = '-1002241159685'
 
 # FLASK
 server = Flask(__name__)
+
+##ENVIAR MENSAJE A CADA USUARIO
+message_ids_to_forward = []
+
+@bot.channel_post_handler(func=lambda message: True)
+def handle_channel_post(message):
+    # Agregar el ID del mensaje del canal a la lista
+    message_ids_to_forward.append(message.message_id)
+##ENVIAR MENSAJE A CADA USUARIO
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -80,6 +85,13 @@ def send_welcome(message):
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
 🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
+        # Reenviar mensajes del canal a este usuario
+        for message_id in message_ids_to_forward:
+            try:
+                bot.forward_message(user_id, CHANNEL_ID, message_id)
+            except telebot.apihelper.ApiException as e:
+                print(f"No se pudo reenviar el mensaje al usuario {user_id}: {e}")
+            time.sleep(1)
 
 
 @bot.message_handler(commands=['dni'])
@@ -387,19 +399,6 @@ def show_help(message):
     """
     bot.reply_to(message, help_text, parse_mode="Markdown")
 
-##ENVIAR MENSAJE A CADA USUARIO
-@bot.message_handler(content_types=['text'], func=lambda message: message.chat.id == CHANNEL_ID)
-def handle_channel_message(message):
-    # Aquí puedes procesar el mensaje del canal
-    print(f"Mensaje recibido del canal: {message.text}")
-    
-    # Enviar el mensaje a todos los usuarios que iniciaron el bot
-    for user_id in started_users:
-        try:
-            bot.send_message(user_id, message.text)
-        except telebot.apihelper.ApiException as e:
-            print(f"Error al enviar mensaje a {user_id}: {e}")
-##ENVIAR MENSAJE A CADA USUARIO
 
 
 @server.route('/' + TOKEN, methods=['POST'])
