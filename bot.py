@@ -58,8 +58,9 @@ def send_welcome(message):
     markup.add(types.InlineKeyboardButton("Referencias", url="https://t.me/enpungarefes"))
     markup.add(types.InlineKeyboardButton("Grupo", url="https://t.me/AfanandoGroup"))
 
+    photo_path = 'renaper.jpg'  # Ruta de la foto
+
     if username:
-        bot.send_photo(message.chat.id, photo=open('renaper.jpg', 'rb'))
         bot.reply_to(message, f"""🌟 Bienvenido, @{username} ! 🌟
 
 🤖 | Soy @enpunga_bot , BOT que se especializa en la búsqueda de datos de argentinos.
@@ -77,9 +78,8 @@ def send_welcome(message):
 🔐 Para acceder a estas herramientas requiere una suscripción.
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup, photo=open(photo_path, 'rb'))
     else:
-        bot.send_photo(message.chat.id, photo=open('renaper.jpg', 'rb'))
         bot.reply_to(message, """🌟 Bienvenido 🌟
 
 🤖 | Soy @enpunga_bot , BOT que se especializa en la búsqueda de datos de argentinos.
@@ -97,7 +97,7 @@ def send_welcome(message):
 🔐 Para acceder a estas herramientas requiere una suscripción.
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup, photo=open(photo_path, 'rb'))
 
 @bot.message_handler(commands=['dni'])
 def send_dni_info(message):
