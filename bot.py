@@ -50,10 +50,8 @@ def send_welcome(message):
     markup.add(types.InlineKeyboardButton("Referencias", url="https://t.me/enpungarefes"))
     markup.add(types.InlineKeyboardButton("Grupo", url="https://t.me/AfanandoGroup"))
 
-    photo_path = 'renaper.jpg'  # Ruta de la foto
-
     if username:
-        bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption=f"""🌟 Bienvenido, @{username} ! 🌟
+        bot.send_photo(message.chat.id, caption=f"""🌟 Bienvenido, @{username} ! 🌟
 
 🤖 | Soy @enpunga_bot , bot que se especializa en la búsqueda de datos de argentinos.
 
