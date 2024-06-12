@@ -256,9 +256,7 @@ def send_purchase_info(message):
     markup.add(types.InlineKeyboardButton("ZEAK", url="https://t.me/afanando"))
     markup.add(types.InlineKeyboardButton("Forence", url="https://t.me/ciberforence"))
 
-    photo_path = 'comprar.png'  # Ruta de la foto
-
-    bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption="Para Comprar La Membresia, Contacta Al Staff:", reply_markup=markup)
+    bot.reply_to(message, "Para Adquirir el Acceso al Bot Contacta a Soporte", reply_markup=markup)
 
 @bot.message_handler(commands=['add'])
 def add_user_command(message):
