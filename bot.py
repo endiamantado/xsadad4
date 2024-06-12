@@ -51,7 +51,9 @@ def send_welcome(message):
     markup.add(types.InlineKeyboardButton("Grupo", url="https://t.me/AfanandoGroup"))
 
     if username:
-        bot.send_photo(message.chat.id, caption=f"""🌟 Bienvenido, @{username} ! 🌟
+        bot.send_photo(
+            message.chat.id,
+            caption=f"""🌟 Bienvenido, @{username} ! 🌟
 
 🤖 | Soy @enpunga_bot , bot que se especializa en la búsqueda de datos de argentinos.
 
@@ -68,7 +70,32 @@ def send_welcome(message):
 🔐 | Para acceder a estas herramientas requiere una membresia.
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""",
+            reply_markup=markup
+        )
+    else:
+        bot.send_photo(
+            message.chat.id,
+            caption=f"""🌟 Bienvenido! 🌟
+
+🤖 | Soy @enpunga_bot , bot que se especializa en la búsqueda de datos de argentinos.
+
+🔍 | Con este bot podrás tener informes de cualquier edad a un precio económico!
+
+🧑🏻‍💻 | Estas Son Las Funciones que están disponibles:
+➣ /dni [DNI] [F/M]
+➣ /buscar [NOMBRE/RAZON SOCIAL]
+➣ /ip [IP ADRESS]
+➣ /me | Consultar Membresia
+➣ /id | Ver tu id
+➣ /comprar | Informacion Para Adquirir el bot
+
+🔐 | Para acceder a estas herramientas requiere una membresia.
+
+🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""",
+            reply_markup=markup
+        )
 
 
 @bot.message_handler(commands=['dni'])
