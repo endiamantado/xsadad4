@@ -202,12 +202,12 @@ def send_long_message(message, header, results):
 def ip_command(message):
     try:
         user_id = message.from_user.id
-        command_params = message.text.split()
 
         if user_id not in authorized_users and user_id not in ADMINS_USERS:
             bot.send_message(message.chat.id, '🚫 No tienes permiso para usar este comando, para comprar el bot /comprar.')
             return
 
+        command_params = message.text.split()
         if len(command_params) != 2:
             raise ValueError("Número incorrecto de parámetros")
 
@@ -222,28 +222,28 @@ def ip_command(message):
                 bot.reply_to(message, f"No se encontró información para la IP: {ip_address}")
                 return
 
-            formatted_response = f"""```
-IP: {ip_address}
-Status: {data.get('status', 'N/A')}
-País: {data.get('country', 'N/A')}
-Región: {data.get('regionName', 'N/A')}
-Ciudad: {data.get('city', 'N/A')}
-Código Postal: {data.get('zip', 'N/A')}
-Latitud: {data.get('lat', 'N/A')}
-Longitud: {data.get('lon', 'N/A')}
-Zona Horaria: {data.get('timezone', 'N/A')}
-ISP: {data.get('isp', 'N/A')}
-Organización: {data.get('org', 'N/A')}
-AS: {data.get('as', 'N/A')}
-```"""
-            bot.reply_to(message, formatted_response, parse_mode='Markdown')
+            formatted_response = f""" ```
+IP: {data['query']}
+Status: {data['status']}
+País: {data['country']}
+Región: {data['region']}
+Ciudad: {data['city']}
+Código Postal: {data['zip']}
+Latitud: {data['lat']}
+Longitud: {data['lon']}
+Zona Horaria: {data['timezone']}
+ISP: {data['isp']}
+ORG: {data['org']}
+AS: {data['as']}
+             ```"""
+            bot.send_message(message.chat.id, formatted_response, parse_mode="Markdown")
+            bot.send_location(message.chat.id, latitude=data['lat'], longitude=data['lon'])
         else:
             bot.reply_to(message, f"Error al consultar la información de la IP: {ip_address}")
     except (IndexError, ValueError) as e:
         bot.reply_to(message, str(e))
     except requests.exceptions.RequestException as e:
         bot.reply_to(message, f'Error de conexión: {e}')
-
 
 @bot.message_handler(commands=['id'])
 def send_user_id(message):
