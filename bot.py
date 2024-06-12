@@ -79,7 +79,7 @@ def send_dni_info(message):
         user_id = str(message.from_user.id)
 
         if user_id not in authorized_users and user_id not in ADMINS_USERS:
-            bot.send_message(message.chat.id, '🚫 No tienes permiso para usar este comando, para comprar el bot /comprar')
+            bot.send_message(message.chat.id, '🚫 No tienes permiso para usar este comando, para comprar el bot /comprar.')
             return
 
         command_params = message.text.split()
