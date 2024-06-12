@@ -35,28 +35,14 @@ bot = telebot.TeleBot(TOKEN)
 WEBHOOK_URL = "https://xsadad4.onrender.com/" + TOKEN
 PORT = int(os.environ.get('PORT', 5000))
 
-##ENVIAR MENSAJE A CADA USUARIO
-CHANNEL_ID = '-1002241159685'
-##ENVIAR MENSAJE A CADA USUARIO
-
 # FLASK
 server = Flask(__name__)
-
-##ENVIAR MENSAJE A CADA USUARIO
-message_ids_to_forward = []
-
-@bot.channel_post_handler(func=lambda message: True)
-def handle_channel_post(message):
-    # Agregar el ID del mensaje del canal a la lista
-    message_ids_to_forward.append(message.message_id)
-##ENVIAR MENSAJE A CADA USUARIO
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     user = message.from_user
     username = user.username
     user_id = user.id
-    started_users.add(user_id)
     print(f"EJECUTO /START: {user_id}")
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("Canal", url="https://t.me/EnpungaUpdates"))
@@ -85,13 +71,6 @@ def send_welcome(message):
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
 🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
-        # Reenviar mensajes del canal a este usuario
-        for message_id in message_ids_to_forward:
-            try:
-                bot.forward_message(user_id, CHANNEL_ID, message_id)
-            except telebot.apihelper.ApiException as e:
-                print(f"No se pudo reenviar el mensaje al usuario {user_id}: {e}")
-            time.sleep(1)
 
 
 @bot.message_handler(commands=['dni'])
@@ -372,17 +351,6 @@ def show_whitelist(message):
     except Exception as e:
         bot.reply_to(message, f'Ocurrió un error: {e}')
 
-##ENVIAR MENSAJE A CADA USUARIO
-@bot.message_handler(commands=['starts'])
-def show_started_users(message):
-    # Generar el mensaje con la lista de usuarios que han iniciado el bot
-    if started_users:
-        users_list = "\n".join(str(user) for user in started_users)
-        bot.send_message(message.chat.id, f"Usuarios que han iniciado el bot:\n{users_list}")
-    else:
-        bot.send_message(message.chat.id, "Ningún usuario ha iniciado el bot.")
-##ENVIAR MENSAJE A CADA USUARIO
-
 @bot.message_handler(commands=['cmds'])
 def show_help(message):
     user_id = message.from_user.id
@@ -398,7 +366,6 @@ def show_help(message):
 › /comprar - Información sobre como adquirir el bot.***
     """
     bot.reply_to(message, help_text, parse_mode="Markdown")
-
 
 
 @server.route('/' + TOKEN, methods=['POST'])
