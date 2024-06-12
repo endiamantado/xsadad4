@@ -65,9 +65,9 @@ def send_welcome(message):
 
 🤖 | Soy @enpunga_bot , bot que se especializa en la búsqueda de datos de argentinos.
 
-🔍 | Con este bot podrás tener informes de cualquier edad a un precio económico!
+🔍 | **Con este bot podrás tener informes de cualquier edad a un precio económico!**
 
-🧑🏻‍💻 | Estas Son Las Funciones que están disponibles:
+🧑🏻‍💻 **| Estas Son Las Funciones que están disponibles:**
 ➣ /dni [DNI] [F/M]
 ➣ /buscar [NOMBRE/RAZON SOCIAL]
 ➣ /ip [IP ADRESS]
@@ -75,10 +75,10 @@ def send_welcome(message):
 ➣ /id | Ver tu id
 ➣ /comprar | Informacion Para Adquirir el bot
 
-🔐 | Para acceder a estas herramientas requiere una membresia.
+🔐 | **Para acceder a estas herramientas requiere una membresia.**
 
-🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga"""
+🔗 **Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!**
+🔋 **Consulta si el bot esta apagado o esta ON: @statusenpunga**"""
     else:
         caption = """🌟 Bienvenido 🌟
 
