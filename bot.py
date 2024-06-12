@@ -38,14 +38,6 @@ PORT = int(os.environ.get('PORT', 5000))
 # FLASK
 server = Flask(__name__)
 
-@bot.message_handler(commands=['comprar'])
-def send_purchase_info(message):
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("ZEAK", url="https://t.me/afanando"))
-    markup.add(types.InlineKeyboardButton("Forence", url="https://t.me/ciberforence"))
-
-    bot.reply_to(message, "Para Adquirir el Acceso al Bot Contacta a Soporte", reply_markup=markup)
-
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     user = message.from_user
@@ -61,26 +53,7 @@ def send_welcome(message):
     photo_path = 'renaper.jpg'  # Ruta de la foto
 
     if username:
-        caption = f"""🌟 Bienvenido, @{username} ! 🌟
-
-🤖 | Soy @enpunga_bot , bot que se especializa en la búsqueda de datos de argentinos.
-
-🔍 | **Con este bot podrás tener informes de cualquier edad a un precio económico!**
-
-🧑🏻‍💻 **| Estas Son Las Funciones que están disponibles:**
-➣ /dni [DNI] [F/M]
-➣ /buscar [NOMBRE/RAZON SOCIAL]
-➣ /ip [IP ADRESS]
-➣ /me | Consultar Membresia
-➣ /id | Ver tu id
-➣ /comprar | Informacion Para Adquirir el bot
-
-🔐 | **Para acceder a estas herramientas requiere una membresia.**
-
-🔗 **Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!**
-🔋 **Consulta si el bot esta apagado o esta ON: @statusenpunga**"""
-    else:
-        caption = """🌟 Bienvenido 🌟
+        bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption=f"""🌟 Bienvenido, @{username} ! 🌟
 
 🤖 | Soy @enpunga_bot , bot que se especializa en la búsqueda de datos de argentinos.
 
@@ -97,9 +70,7 @@ def send_welcome(message):
 🔐 | Para acceder a estas herramientas requiere una membresia.
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga"""
-
-    bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption=caption, reply_markup=markup, parse_mode="Markdown")
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
 
 
 @bot.message_handler(commands=['dni'])
