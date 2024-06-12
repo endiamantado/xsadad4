@@ -51,6 +51,7 @@ def send_welcome(message):
     user = message.from_user
     username = user.username
     user_id = user.id
+    started_users.add(user_id)
     print(f"EJECUTO /START: {user_id}")
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("Canal", url="https://t.me/EnpungaUpdates"))
@@ -394,7 +395,10 @@ def handle_channel_message(message):
     
     # Enviar el mensaje a todos los usuarios que iniciaron el bot
     for user_id in started_users:
-        bot.send_message(user_id, message.text)
+        try:
+            bot.send_message(user_id, message.text)
+        except telebot.apihelper.ApiException as e:
+            print(f"Error al enviar mensaje a {user_id}: {e}")
 ##ENVIAR MENSAJE A CADA USUARIO
 
 
