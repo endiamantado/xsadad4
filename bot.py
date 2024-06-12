@@ -59,6 +59,7 @@ def send_welcome(message):
     markup.add(types.InlineKeyboardButton("Grupo", url="https://t.me/AfanandoGroup"))
 
     if username:
+        bot.send_photo(message.chat.id, photo=open('renaper.jpg', 'rb'))
         bot.reply_to(message, f"""🌟 Bienvenido, @{username} ! 🌟
 
 🤖 | Soy @enpunga_bot , BOT que se especializa en la búsqueda de datos de argentinos.
@@ -78,6 +79,7 @@ def send_welcome(message):
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
 🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
     else:
+        bot.send_photo(message.chat.id, photo=open('renaper.jpg', 'rb'))
         bot.reply_to(message, """🌟 Bienvenido 🌟
 
 🤖 | Soy @enpunga_bot , BOT que se especializa en la búsqueda de datos de argentinos.
