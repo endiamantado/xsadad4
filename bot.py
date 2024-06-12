@@ -61,7 +61,7 @@ def send_welcome(message):
     photo_path = 'renaper.jpg'  # Ruta de la foto
 
     if username:
-        bot.reply_to(message, f"""🌟 Bienvenido, @{username} ! 🌟
+        bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption=f"""🌟 Bienvenido, @{username} ! 🌟
 
 🤖 | Soy @enpunga_bot , BOT que se especializa en la búsqueda de datos de argentinos.
 
@@ -78,9 +78,9 @@ def send_welcome(message):
 🔐 Para acceder a estas herramientas requiere una suscripción.
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup, photo=open(photo_path, 'rb'))
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
     else:
-        bot.reply_to(message, """🌟 Bienvenido 🌟
+        bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption="""🌟 Bienvenido 🌟
 
 🤖 | Soy @enpunga_bot , BOT que se especializa en la búsqueda de datos de argentinos.
 
@@ -97,7 +97,7 @@ def send_welcome(message):
 🔐 Para acceder a estas herramientas requiere una suscripción.
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup, photo=open(photo_path, 'rb'))
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
 
 @bot.message_handler(commands=['dni'])
 def send_dni_info(message):
