@@ -61,43 +61,46 @@ def send_welcome(message):
     photo_path = 'renaper.jpg'  # Ruta de la foto
 
     if username:
-        bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption=f"""🌟 Bienvenido, @{username} ! 🌟
+        caption = f"""🌟 Bienvenido, @{username} ! 🌟
 
-🤖 | Soy @enpunga_bot , BOT que se especializa en la búsqueda de datos de argentinos.
+🤖 | Soy @enpunga_bot , bot que se especializa en la búsqueda de datos de argentinos.
 
 🔍 | Con este bot podrás tener informes de cualquier edad a un precio económico!
 
-👨🏻‍💻 | Estas Son Las Funciones que están disponibles:
-› /dni [DNI] [F/M]
-› /buscar [NOMBRE/RAZON SOCIAL]
-› /ip [IP ADRESS] (Gasta)
-› /me (ver las busquedas que te quedan)
-› /id (ver tu id)
-› /comprar (informacion + precios + contacto)
+🧑🏻‍💻 | Estas Son Las Funciones que están disponibles:
+➣ /dni [DNI] [F/M]
+➣ /buscar [NOMBRE/RAZON SOCIAL]
+➣ /ip [IP ADRESS]
+➣ /me | Consultar Membresia
+➣ /id | Ver tu id
+➣ /comprar | Informacion Para Adquirir el bot
 
-🔐 Para acceder a estas herramientas requiere una suscripción.
+🔐 | Para acceder a estas herramientas requiere una membresia.
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga"""
     else:
-        bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption="""🌟 Bienvenido 🌟
+        caption = """🌟 Bienvenido 🌟
 
-🤖 | Soy @enpunga_bot , BOT que se especializa en la búsqueda de datos de argentinos.
+🤖 | Soy @enpunga_bot , bot que se especializa en la búsqueda de datos de argentinos.
 
 🔍 | Con este bot podrás tener informes de cualquier edad a un precio económico!
 
-👨🏻‍💻 | Estas Son Las Funciones que están disponibles:
-› /dni [DNI] [F/M]
-› /buscar [NOMBRE/RAZON SOCIAL]
-› /ip [IP ADRESS] (Gasta)
-› /me (ver las busquedas que te quedan)
-› /id (ver tu id)
-› /comprar (informacion + precios + contacto)
+🧑🏻‍💻 | Estas Son Las Funciones que están disponibles:
+➣ /dni [DNI] [F/M]
+➣ /buscar [NOMBRE/RAZON SOCIAL]
+➣ /ip [IP ADRESS]
+➣ /me | Consultar Membresia
+➣ /id | Ver tu id
+➣ /comprar | Informacion Para Adquirir el bot
 
-🔐 Para acceder a estas herramientas requiere una suscripción.
+🔐 | Para acceder a estas herramientas requiere una membresia.
 
 🔗 Sigue Nuestro Canal @EnPungaUpdates Para Ver Las Novedades Del Bot!
-🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga""", reply_markup=markup)
+🔋 Consulta si el bot esta apagado o esta ON: @statusenpunga"""
+
+    bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption=caption, reply_markup=markup, parse_mode="Markdown")
+
 
 @bot.message_handler(commands=['dni'])
 def send_dni_info(message):
@@ -284,7 +287,7 @@ def send_purchase_info(message):
 
     photo_path = 'comprar.png'  # Ruta de la foto
 
-    bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption="Para Adquirir el Acceso al Bot Contacta a Soporte", reply_markup=markup)
+    bot.send_photo(message.chat.id, open(photo_path, 'rb'), caption="Para Comprar La Membresia, Contacta Al Staff:", reply_markup=markup)
 
 @bot.message_handler(commands=['add'])
 def add_user_command(message):
