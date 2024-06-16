@@ -329,7 +329,7 @@ def send_user_id(message):
 @bot.message_handler(commands=['comprar'])
 def send_purchase_info(message):
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("ZEAK", url="https://t.me/afanando"))
+    markup.add(types.InlineKeyboardButton("𖣔ꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋꠋzeak", url="https://t.me/afanando"))
     markup.add(types.InlineKeyboardButton("Forence", url="https://t.me/ciberforence"))
 
     bot.reply_to(message, "Para Adquirir el Acceso al Bot Contacta a Soporte", reply_markup=markup)
