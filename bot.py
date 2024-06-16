@@ -61,6 +61,7 @@ def send_welcome(message):
 
 🧑🏻‍💻 | Estas Son Las Funciones que están disponibles:
 ➣ /dni [DNI] [F/M]
+➣ /basico [DNI] (informe megabasico hasta que vuelva teleconsultas)
 ➣ /buscar [NOMBRE/RAZON SOCIAL]
 ➣ /ip [IP ADRESS]
 ➣ /me | Consultar Membresia
@@ -153,6 +154,57 @@ Domicilio:
             bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M] y asegúrate de que el DNI tenga 8 dígitos.")
     except (IndexError, ValueError):
         bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] [F/M].")
+
+
+##NUEVA APII
+@bot.message_handler(commands=['basico'])
+def send_dni_info(message):
+    try:
+        user_id = str(message.from_user.id)
+
+        if user_id not in authorized_users and user_id not in ADMINS_USERS:
+            bot.send_message(message.chat.id, '🚫 No tienes permiso para usar este comando, para comprar el bot /comprar.')
+            return
+        
+        command_params = message.text.split()
+        if len(command_params) != 2:
+            raise ValueError("Número incorrecto de parámetros")
+
+        dni = command_params[1]
+
+        bot.reply_to(message, "🔍 Consultando DNI...")
+        if len(dni) == 8 and dni.isdigit():
+            url = f"https://clientes.credicuotas.com.ar/v1/onboarding/resolvecustomers/{dni}"
+            try:
+                response = session.get(url, verify=False)  # Desactivar verificación SSL
+                response.raise_for_status()
+                data = response.json()
+                
+                if data:  # Verificar si la respuesta contiene datos
+                    for entry in data:
+                        formatted_message = f"""
+                        ```
+Datos Basicos:
+› Nombre Completo: {entry.get('nombrecompleto', 'N/A')}
+› Cuit: {entry.get('cuit', 'N/A')}
+› DNI: {entry.get('dni', 'N/A')}
+› Fecha De Nacimiento: {entry.get('fechanacimiento', 'N/A')}
+› Sexo: {entry.get('sexo', 'N/A')}
+› DNI Calculado: {entry.get('dni_calculado', 'N/A')}
+                        ```
+                        """
+                    bot.reply_to(message, formatted_message, parse_mode='Markdown')
+                    print(f"/DNI UTILIZADO POR {message.from_user.id}, DNI Buscado: {dni}")
+                else:
+                    bot.reply_to(message, "No se encontró información para el DNI proporcionado.")
+            except requests.RequestException as e:
+                bot.reply_to(message, "Error al obtener información del servidor.")
+                print(f"Error al obtener información del servidor: {e}")
+        else:
+            bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI] y asegúrate de que el DNI tenga 8 dígitos.")
+    except (IndexError, ValueError):
+        bot.reply_to(message, "Formato incorrecto. Usa /dni [DNI].")
+##NUEVA APII
 
 @bot.message_handler(commands=['buscar'])
 def buscar_nombre(message):
